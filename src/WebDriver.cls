@@ -1,12 +1,3 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-END
-Attribute VB_Name = "WebDriver"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
 '------------------------------------------------------------------
 ' SeleniumWrapperVBA v1.0.7
 '
@@ -89,7 +80,7 @@ Public Enum By
     PartialLinkText = 5
     TagName = 6
     XPath = 7
-    CSS = 8
+    css = 8
 End Enum
 
 Private m_RemoteEndUrl As String
@@ -704,17 +695,22 @@ Public Function ExecuteScript(ByVal script As String, ParamArray args() As Varia
     Dim urlParameters As New Dictionary, _
         requestBody As New Dictionary, _
         responseBody As Dictionary
-    Dim args2() as Variant
+    Dim args2() As Variant
     
     urlParameters.Add "{session id}", MyOptions.Capabilities("sessionId")
     
-    'Change any WebElement objects passed in to instead be their elementJson
-    ReDim args2(Ubound(args))
-    Dim i As Integer
-    For i = 0 To UBound(args)
-        Set args2(i) = args(i)
-        If TypeOf args(i) Is WebElement Then Set args2(i) = args(i).elementJson
-    Next i
+    If UBound(args) > -1 Then
+        'Change any WebElement objects passed in to instead be their elementJson
+        ReDim args2(UBound(args))
+        Dim i As Integer
+        For i = 0 To UBound(args)
+            If TypeOf args(i) Is WebElement Then
+                Set args2(i) = args(i).elementJson
+            Else
+                args2(i) = args(i)
+            End If
+        Next i
+    End If
     
     requestBody.Add "script", script
     requestBody.Add "args", args2
@@ -732,13 +728,18 @@ Public Function ExecuteAsyncScript(ByVal script As String, ParamArray args() As 
     
     urlParameters.Add "{session id}", MyOptions.Capabilities("sessionId")
     
-    'Change any WebElement objects passed in to instead be their elementJson
-    ReDim args2(UBound(args))
-    Dim i As Integer
-    For i = 0 To UBound(args)
-        Set args2(i) = args(i)
-        If TypeOf args(i) Is WebElement Then Set args2(i) = args(i).elementJson
-    Next i
+    If UBound(args) > -1 Then
+        'Change any WebElement objects passed in to instead be their elementJson
+        ReDim args2(UBound(args))
+        Dim i As Integer
+        For i = 0 To UBound(args)
+            If TypeOf args(i) Is WebElement Then
+                Set args2(i) = args(i).elementJson
+            Else
+                args2(i) = args(i)
+            End If
+        Next i
+    End If
     
     requestBody.Add "script", script
     requestBody.Add "args", args2
@@ -896,7 +897,7 @@ Private Function SelectLocationStrategies(ByVal Strategy As By, ByVal value As S
             searchJson.Add "using", "link text"
         Case Strategy = By.PartialLinkText
             searchJson.Add "using", "partial link text"
-        Case Strategy = By.TagName, Strategy = By.CSS
+        Case Strategy = By.TagName, Strategy = By.css
             searchJson.Add "using", "css selector"
             searchJson.Add "value", value
         Case Strategy = By.XPath
