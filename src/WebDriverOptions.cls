@@ -40,6 +40,7 @@ Private m_ChromeArguments As Collection
 
 ' Options for Firefox
 Private m_FirefoxArguments As Collection
+Private m_FirefoxBinary As String
 
 ' Options for Edge
 Private m_EdgeArguments As Collection
@@ -106,6 +107,14 @@ End Property
 
 Public Property Let FirefoxArguments(ByVal new_FirefoxArguments As Collection)
     Set m_FirefoxArguments = new_FirefoxArguments
+End Property
+
+Public Property Get FirefoxBinary() As String
+    FirefoxBinary = m_FirefoxBinary
+End Property
+
+Public Property Let FirefoxBinary(ByVal new_FirefoxBinary As String)
+    m_FirefoxBinary = new_FirefoxBinary
 End Property
 
 Public Property Get EdgeArguments() As Collection
@@ -177,6 +186,7 @@ Public Function ConstructCapabilities() As Dictionary
     Case Me.BrowserType = Firefox
         Dim firefoxOptionsRoot As New Dictionary
         firefoxOptionsRoot.Add "args", FirefoxArguments
+        firefoxOptionsRoot.Add "binary", FirefoxBinary
         
         alwaysMatchRoot.Add "browserName", "firefox"
         alwaysMatchRoot.Add "moz:firefoxOptions", firefoxOptionsRoot
